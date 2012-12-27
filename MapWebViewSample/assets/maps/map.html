@@ -1,0 +1,210 @@
+<html>
+	<head>
+		<!-- OpenLayers -->
+		<script src="http://openlayers.org/api/OpenLayers.js"></script>
+		
+		<!-- Map Pins -->
+		<script src="MapPin.js"></script>	
+	</head>
+
+  <body>
+    <div id="map_canvas"></div>
+	
+<script>
+
+// ***************************************************************
+// VARIABLES
+// ***************************************************************
+
+	var openLayersMap;
+	var pinLayer;
+	var selectControl;
+	var iconSize = 200; // used as initial width and height of map pin
+	var mapPointsArray = new Array();
+	var arePinsClickable = true;
+
+// ***************************************************************
+// CONSTANTS
+// ***************************************************************
+
+	var ICON_IMAGE 			= "icon.png";
+	var ICON_FOCUS_IMAGE 	= "icon-focus.png";
+
+// ***************************************************************
+// Constructor
+// ***************************************************************
+function initOpenLayersMaps() {
+
+	// Create map
+ 	openLayersMap = new OpenLayers.Map( 'map_canvas', generateMapOptions() );
+ 
+ 	// Generate tiling layer
+ 	openLayersMap.addLayer(new OpenLayers.Layer.OSM());
+ 
+ 	// Register listeners
+ 	openLayersMap.events.register('zoomend', this, drawMapPins);
+
+ 	// Generate pin style layer
+ 	pinLayer = generateMapPin(ICON_IMAGE, ICON_FOCUS_IMAGE, iconSize, iconSize);
+ 	openLayersMap.addLayer(pinLayer);
+ 	setMapControls();
+ 
+ 	// Add pins 
+ 	pinLayer.addFeatures(mapPointsArray);
+  
+ 	// Set center of map
+ 	setCenter(29.771530, -95.416466, 14);
+ 
+}
+
+// ***************************************************************
+// SETTERS
+// ***************************************************************
+
+function addMapPins( arrayOfPins ) {
+
+	// Push pins to array
+	for (var i in arrayOfPins.Stations) {
+		mapPointsArray.push( createMapPin(arrayOfPins.Stations[i].Latitude, arrayOfPins.Stations[i].Longitude, arrayOfPins.Stations[i].StationId) );
+	}
+
+	// Set map center
+	setCenter( arrayOfPins.Center.Latitude, arrayOfPins.Center.Longitude );
+
+	// Add and redraw points	
+ 	pinLayer.addFeatures(mapPointsArray);
+ 	pinLayer.redraw();
+	
+ 	// Reset controls
+ 	setMapControls();
+}
+
+function addOneMapPin( mapPin ) {
+	
+	// Push pin to array
+	mapPointsArray.push( createMapPin(mapPin.Latitude, mapPin.Longitude, mapPin.StationId) );
+	
+	// Center map on pin
+	setCenter( mapPin.Latitude, mapPin.Longitude );
+
+	// Add and redraw points	
+ 	pinLayer.addFeatures(mapPointsArray);
+ 	pinLayer.redraw();
+	
+ 	// Reset controls
+ 	setMapControls();
+}
+
+function generatePinsJSON() {
+
+	var pins =  { "pins": [
+					{ "latitude":29.77, "longitude":-95.41 }, 
+					{ "latitude":29.72, "longitude":-95.34 }, 
+					{ "latitude":29.64, "longitude":-95.43 }
+				]};
+				 
+	return pins;
+
+}
+
+function setCenter(latitude, longitude, zoomLevel) {
+
+   	openLayersMap.setCenter(
+    	new OpenLayers.LonLat(longitude, latitude).transform(
+    	new OpenLayers.Projection("EPSG:4326"), openLayersMap.getProjectionObject()
+  	), zoomLevel);
+  
+}
+
+function setMapControls() {
+
+	// Check conditions
+	if( !arePinsClickable )
+		return;
+
+ 	// Enable clicking of map pins through Layer switcher
+ 	openLayersMap.addControl(new OpenLayers.Control.LayerSwitcher());
+
+ 	// Create, add and activate selection controller
+ 	selectControl = new OpenLayers.Control.SelectFeature( [pinLayer] );
+ 	openLayersMap.addControl(selectControl);
+ 	selectControl.activate();
+  
+ 	// Register event to listen for click  
+ 	pinLayer.events.on({
+	 	"featureselected": function(e) {
+    	 	navigator.cascades.postMessage(e.feature.attributes.attributes.pinId);
+     	},
+     	"featureunselected": function(e) {
+    	 	
+     	}
+ 	});
+
+}
+
+// ***************************************************************
+// CONTROLS
+// ***************************************************************
+
+function zoomIn() {
+
+ 	openLayersMap.zoomIn();
+ 	
+}
+
+function zoomOut() {
+
+ 	openLayersMap.zoomOut();
+ 	
+}
+
+function setZoomLevel(zoomLevel) {
+
+	openLayersMap.zoomTo(zoomLevel);
+
+}
+
+
+function setPinsClickable(clickable) {
+
+	if( arePinsClickable ) 
+		openLayersMap.removeControl(selectControl);
+
+	arePinsClickable = clickable;
+	
+}
+
+// ***************************************************************
+// DRAWING
+// ***************************************************************
+
+function drawMapPins(event) {
+
+ 	// Generate new map pin size based on zoom level 
+ 	var iconSize = openLayersMap.zoom * 13;
+ 
+ 	// Remove map pin layer temporarily
+ 	openLayersMap.removeLayer(pinLayer);
+ 
+ 	// Create new map pin layer(scaled now) and add it to the map
+ 	pinLayer = generateMapPin(ICON_IMAGE, ICON_FOCUS_IMAGE, iconSize, iconSize);
+ 	pinLayer.redraw();
+ 	pinLayer.addFeatures(mapPointsArray);
+ 	openLayersMap.addLayer(pinLayer);
+ 	
+ 	// Reset controls
+ 	setMapControls();
+ 	
+}
+
+// ***************************************************************
+// INITIALIZATION
+// ***************************************************************
+
+	initOpenLayersMaps();
+
+</script>
+
+  </body>
+</html>
+			
