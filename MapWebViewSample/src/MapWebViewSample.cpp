@@ -15,6 +15,12 @@ MapWebViewSample::MapWebViewSample(bb::cascades::Application *app)
     // set parent to created document to ensure it exists for the whole application lifetime
     mQmlDocument = QmlDocument::create("asset:///main.qml").parent(this);
 
+    // Start getting GPS location
+    initializeLocation();
+
+    // Create a controller for maps
+    createMapController();
+
     // create root object for the UI
     AbstractPane *root = mQmlDocument->createRootObject<AbstractPane>();
     // set created root object as a scene

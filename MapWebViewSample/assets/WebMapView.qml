@@ -15,7 +15,6 @@ Sheet {
             id: titleBarMapSheet
             title: "Map"
             visibility: ChromeVisibility.Visible
-            branded: TriBool.False
             acceptAction: ActionItem {
                 title: "Close"
                 onTriggered: {

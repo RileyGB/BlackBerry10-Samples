@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'MapController.h'
 **
-** Created: Thu Dec 27 11:02:49 2012
+** Created: Thu Dec 27 12:44:11 2012
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -35,8 +35,8 @@ static const uint qt_meta_data_MapController[] = {
       44,   14,   14,   14, 0x02,
       53,   14,   14,   14, 0x02,
       73,   63,   14,   14, 0x02,
-     104,   91,   14,   14, 0x02,
-     142,  132,   14,   14, 0x02,
+      96,   91,   14,   14, 0x02,
+     130,  120,   14,   14, 0x02,
 
        0        // eod
 };
@@ -44,9 +44,8 @@ static const uint qt_meta_data_MapController[] = {
 static const char qt_meta_stringdata_MapController[] = {
     "MapController\0\0webView\0setWebView(QObject*)\0"
     "zoomIn()\0zoomOut()\0zoomLevel\0"
-    "setZoomLevel(int)\0pins,mapType\0"
-    "setMapPins(QVariantMap,int)\0clickable\0"
-    "setPinsClickable(bool)\0"
+    "setZoomLevel(int)\0pins\0setMapPins(QVariantMap)\0"
+    "clickable\0setPinsClickable(bool)\0"
 };
 
 void MapController::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -59,7 +58,7 @@ void MapController::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 1: _t->zoomIn(); break;
         case 2: _t->zoomOut(); break;
         case 3: _t->setZoomLevel((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 4: _t->setMapPins((*reinterpret_cast< QVariantMap(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 4: _t->setMapPins((*reinterpret_cast< QVariantMap(*)>(_a[1]))); break;
         case 5: _t->setPinsClickable((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }

@@ -62,19 +62,13 @@ void MapController::setZoomLevel( int zoomLevel ) {
 	}
 }
 
-void MapController::setMapPins( QVariantMap pins, int mapType ) {
+void MapController::setMapPins( QVariantMap pins ) {
 	if ( mWebView ) {
 		Serializer serializer;
 		QString mapPinsString( serializer.serialize(pins) );
 		QString setPins;
 
-		if( mapType == MAP_ONE_PIN ) {
-			setPins.append( "addOneMapPin(" + mapPinsString + ")" );
-		}
-		if( mapType == MAP_MULTIPLE_PINS ) {
-			setPins.append( "addMapPins(" + mapPinsString + ")" );
-		}
-
+		setPins.append( "addMapPins(" + mapPinsString + ")" );
 		qDebug() << "Map Pins: " << setPins;
 
 		mWebView->evaluateJavaScript( setPins );

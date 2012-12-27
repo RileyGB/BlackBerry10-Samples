@@ -64,12 +64,12 @@ function initOpenLayersMaps() {
 function addMapPins( arrayOfPins ) {
 
 	// Push pins to array
-	for (var i in arrayOfPins.Stations) {
-		mapPointsArray.push( createMapPin(arrayOfPins.Stations[i].Latitude, arrayOfPins.Stations[i].Longitude, arrayOfPins.Stations[i].StationId) );
+	for (var i in arrayOfPins.pins) {
+		mapPointsArray.push( createMapPin(arrayOfPins.pins[i].latitude, arrayOfPins.pins[i].longitude, arrayOfPins.pins[i].pinId) );
 	}
 
 	// Set map center
-	setCenter( arrayOfPins.Center.Latitude, arrayOfPins.Center.Longitude );
+	setCenter( arrayOfPins.pins[0].latitude, arrayOfPins.pins[0].longitude );
 
 	// Add and redraw points	
  	pinLayer.addFeatures(mapPointsArray);
@@ -77,34 +77,6 @@ function addMapPins( arrayOfPins ) {
 	
  	// Reset controls
  	setMapControls();
-}
-
-function addOneMapPin( mapPin ) {
-	
-	// Push pin to array
-	mapPointsArray.push( createMapPin(mapPin.Latitude, mapPin.Longitude, mapPin.StationId) );
-	
-	// Center map on pin
-	setCenter( mapPin.Latitude, mapPin.Longitude );
-
-	// Add and redraw points	
- 	pinLayer.addFeatures(mapPointsArray);
- 	pinLayer.redraw();
-	
- 	// Reset controls
- 	setMapControls();
-}
-
-function generatePinsJSON() {
-
-	var pins =  { "pins": [
-					{ "latitude":29.77, "longitude":-95.41 }, 
-					{ "latitude":29.72, "longitude":-95.34 }, 
-					{ "latitude":29.64, "longitude":-95.43 }
-				]};
-				 
-	return pins;
-
 }
 
 function setCenter(latitude, longitude, zoomLevel) {
