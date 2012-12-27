@@ -77,6 +77,7 @@ function addMapPins( arrayOfPins ) {
 	
  	// Reset controls
  	setMapControls();
+ 	
 }
 
 function setCenter(latitude, longitude, zoomLevel) {
@@ -106,6 +107,7 @@ function setMapControls() {
  	pinLayer.events.on({
 	 	"featureselected": function(e) {
     	 	navigator.cascades.postMessage(e.feature.attributes.attributes.pinId);
+    	 	alert("" + e.feature.attributes.attributes.pinId);
      	},
      	"featureunselected": function(e) {
     	 	
@@ -121,7 +123,7 @@ function setMapControls() {
 function zoomIn() {
 
  	openLayersMap.zoomIn();
- 	
+
 }
 
 function zoomOut() {
@@ -139,8 +141,14 @@ function setZoomLevel(zoomLevel) {
 
 function setPinsClickable(clickable) {
 
-	if( arePinsClickable ) 
+	if( arePinsClickable ) {
 		openLayersMap.removeControl(selectControl);
+		selectControl.deactivate();
+	}
+	else {
+		openLayersMap.addControl(selectControl);
+		selectControl.activate();
+	}
 
 	arePinsClickable = clickable;
 	

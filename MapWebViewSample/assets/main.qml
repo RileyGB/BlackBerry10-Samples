@@ -77,7 +77,7 @@ Page {
                 // One map pin
                 if (typeOfMap == 1) {
                     _mapController.setMapPins(getOneMapPin(), 0);
-                    _mapController.setPinsClickable(true);
+                    _mapController.setPinsClickable(false);
                 }
                 // Multiple map pins
                 if (typeOfMap == 2) {

@@ -4,7 +4,6 @@ import bb.cascades 1.0
 
 Sheet {
     property alias mapView: webViewMap
-    
     id: mapSheet
     peekEnabled: false
     onOpenedChanged: {
@@ -24,12 +23,12 @@ Sheet {
         }
         objectName: "mapPage"
         Container {
-            background: Color.Black
-
-            // The map view
-            topPadding: 15.0
-            bottomPadding: 15.0
+            background: Color.White
+            horizontalAlignment: HorizontalAlignment.Center
+            verticalAlignment: VerticalAlignment.Center
             WebView {
+                horizontalAlignment: HorizontalAlignment.Center
+                verticalAlignment: VerticalAlignment.Center
                 id: webViewMap
                 preferredWidth: 768.0
                 preferredHeight: 1200.0
@@ -37,13 +36,17 @@ Sheet {
                 settings.zoomToFitEnabled: true
                 onMessageReceived: {
                     // Ensure that we don't double click
-                    if( webViewMap.enabled ) {
+                    if (webViewMap.enabled) {
                         messageReceivedFromWebview(message.data);
                         webViewMap.enabled = false;
                     }
                 }
             }
             Container {
+                horizontalAlignment: HorizontalAlignment.Center
+                verticalAlignment: VerticalAlignment.Center
+                topPadding: 15.0
+                bottomPadding: 15.0
                 layout: StackLayout {
                     orientation: LayoutOrientation.LeftToRight
                 }
