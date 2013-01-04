@@ -31,7 +31,7 @@ void WebImageView::setUrl(const QUrl& url) {
 	// Otherwise, get image from web
 	QNetworkReply * reply = mNetManager->get(QNetworkRequest(url));
 	connect(reply,SIGNAL(finished()), this, SLOT(imageLoaded()));
-	connect(reply,SIGNAL(QNetworkReply::downloadProgress(qint64, qint64)), this, SLOT(dowloadProgressed(qint64,qint64)));
+	connect(reply,SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(dowloadProgressed(qint64,qint64)));
 
 	//
 	// Note:
