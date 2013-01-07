@@ -1,13 +1,21 @@
 #include "WebImageView.h"
 #include <QNetworkReply>
+#include <QNetworkDiskCache>
+#include <QDesktopServices>
 #include <bb/cascades/Image>
 
 using namespace bb::cascades;
 
-QNetworkAccessManager * WebImageView::mNetManager = new QNetworkAccessManager;
+QNetworkAccessManager * WebImageView::mNetManager = new QNetworkAccessManager();
 
 WebImageView::WebImageView() {
 
+	// Initialize network cache
+	mNetworkDiskCache = new QNetworkDiskCache(this);
+	mNetworkDiskCache->setCacheDirectory(QDesktopServices::storageLocation(QDesktopServices::CacheLocation));
+
+	// Set cache in manager
+	mNetManager->setCache(mNetworkDiskCache);
 
 }
 
@@ -21,17 +29,18 @@ void WebImageView::setUrl(const QUrl& url) {
 	mUrl = url;
 	mLoading = 0;
 
-	// Get image from cache
-	if( isImageInCache() ) {
-		setImage( getImageFromCache() );
-		mLoading = 1.0;
-		return;
-	}
+	// Reset the image
+	resetImage();
 
-	// Otherwise, get image from web
-	QNetworkReply * reply = mNetManager->get(QNetworkRequest(url));
-	connect(reply,SIGNAL(finished()), this, SLOT(imageLoaded()));
-	connect(reply,SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(dowloadProgressed(qint64,qint64)));
+	// Create request
+	QNetworkRequest request;
+	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
+	request.setUrl(url);
+
+	// Create reply
+	QNetworkReply * reply = mNetManager->get(request);
+	QObject::connect(reply,SIGNAL(finished()), this, SLOT(imageLoaded()));
+	QObject::connect(reply,SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(dowloadProgressed(qint64,qint64)));
 
 	//
 	// Note:
@@ -48,12 +57,16 @@ double WebImageView::loading() const {
 
 void WebImageView::imageLoaded() {
 
+	// Get reply
 	QNetworkReply * reply = qobject_cast<QNetworkReply*>(sender());
 
+	// Process reply
 	QByteArray imageData = reply->readAll();
-	setImage( Image(imageData) );
-	saveImageInCache( imageData );
 
+	// Set image from data
+	setImage( Image(imageData) );
+
+	// Memory management
 	reply->deleteLater();
 
 }
@@ -64,59 +77,3 @@ void WebImageView::dowloadProgressed(qint64 bytes,qint64 total) {
 	emit loadingChanged();
 
 }
-
-bool WebImageView::isImageInCache() {
-
-	// Check if we've create image cache map in persistent storage
-	if( !mSettings.contains("ImageCache") ) {
-		QVariantMap emptyImageCacheMap;
-		mSettings.setValue("ImageCache", emptyImageCacheMap);
-	}
-
-	// Create a map for our image cache
-	QVariantMap imageCacheMap = mSettings.value("ImageCache").toMap();
-
-	// Check for our image
-	if( imageCacheMap.contains( mUrl.toString() ) && imageCacheMap.value( mUrl.toString() ).toByteArray().size() > 0 ) {
-		return true;
-	}
-	else {
-		return false;
-	}
-
-}
-
-QByteArray WebImageView::getImageFromCache() {
-
-	// Get image cache
-	QVariantMap imageCacheMap = mSettings.value("ImageCache").toMap();
-
-	// Return image
-	return imageCacheMap.value( mUrl.toString() ).toByteArray();
-
-}
-
-void  WebImageView::saveImageInCache(QByteArray imageData) {
-
-	// Variables
-	QVariantMap imageCacheMap;
-
-	// Get image cache
-	if( !mSettings.contains("ImageCache") ) {
-		mSettings.setValue("ImageCache", imageCacheMap);
-	}
-	else {
-		imageCacheMap = mSettings.value("ImageCache").toMap();
-	}
-
-	// Save image to cache
-	imageCacheMap.insert( mUrl.toString(), imageData );
-
-	// Save image cache
-	mSettings.setValue("ImageCache", imageCacheMap);
-
-}
-
-
-
-

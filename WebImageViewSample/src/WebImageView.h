@@ -3,6 +3,7 @@
 
 #include <bb/cascades/ImageView>
 #include <QNetworkAccessManager>
+#include <QNetworkDiskCache>
 #include <QUrl>
 using namespace bb::cascades;
 
@@ -29,15 +30,10 @@ public:
 
 
 private:
-	bool isImageInCache();
-	QByteArray getImageFromCache();
-	void saveImageInCache(QByteArray imageData);
-
-
 	static QNetworkAccessManager * mNetManager;
 	QUrl mUrl;
 	float mLoading;
-	QSettings mSettings;
+	QNetworkDiskCache* mNetworkDiskCache;
 };
 
 #endif /* WEBIMAGEVIEW_H_ */
