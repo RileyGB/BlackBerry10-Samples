@@ -31,9 +31,9 @@ public:
 
 private:
 	static QNetworkAccessManager * mNetManager;
+	static QNetworkDiskCache * mNetworkDiskCache;
 	QUrl mUrl;
 	float mLoading;
-	QNetworkDiskCache* mNetworkDiskCache;
 };
 
 #endif /* WEBIMAGEVIEW_H_ */

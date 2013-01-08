@@ -7,11 +7,11 @@
 using namespace bb::cascades;
 
 QNetworkAccessManager * WebImageView::mNetManager = new QNetworkAccessManager();
+QNetworkDiskCache * WebImageView::mNetworkDiskCache = new QNetworkDiskCache();
 
 WebImageView::WebImageView() {
 
 	// Initialize network cache
-	mNetworkDiskCache = new QNetworkDiskCache(this);
 	mNetworkDiskCache->setCacheDirectory(QDesktopServices::storageLocation(QDesktopServices::CacheLocation));
 
 	// Set cache in manager
@@ -44,7 +44,7 @@ void WebImageView::setUrl(const QUrl& url) {
 
 	//
 	// Note:
-	// If you see Function "downloadProgress ( qint64 , qint64  )"
+	// If you see Function "downloadProgress ( qint64 , qint64  ) is not defined"
 	// Simply close this file, delete the error and compile the project
 	//
 
