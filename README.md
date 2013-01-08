@@ -1,6 +1,7 @@
 #RileyGB - BlackBerry 10 Samples
 ================================
 
+If you have any questions, comments or concerns tweet me @RileyGB - https://twitter.com/RileyGB
 
 ##MapWebViewSample 
 
