@@ -60,20 +60,35 @@ void WebImageView::imageLoaded() {
 	// Get reply
 	QNetworkReply * reply = qobject_cast<QNetworkReply*>(sender());
 
-	// Process reply
-	QByteArray imageData = reply->readAll();
+	if (reply->error() == QNetworkReply::NoError){
 
-	// Set image from data
-	setImage( Image(imageData) );
+		QUrl baseUrl = reply->url();
+		QUrl redirection = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+		// if redirection exists... Set the new Url
+		if(redirection.isEmpty()){
+			// Process reply
+			QByteArray imageData = reply->readAll();
 
-	// Memory management
-	reply->deleteLater();
+			// Set image from data
+			setImage( Image(imageData) );
 
-}
+		}
+		else{
+			QUrl resolveUrl = baseUrl.resolved(redirection);
+			setUrl(resolveUrl.toString());
+			return;
+		}
 
-void WebImageView::dowloadProgressed(qint64 bytes,qint64 total) {
+	}
 
-	mLoading =  double(bytes)/double(total);
-	emit loadingChanged();
+		// Memory management
+		reply->deleteLater();
 
-}
+	}
+
+	void WebImageView::dowloadProgressed(qint64 bytes,qint64 total) {
+
+		mLoading =  double(bytes)/double(total);
+		emit loadingChanged();
+
+	}
