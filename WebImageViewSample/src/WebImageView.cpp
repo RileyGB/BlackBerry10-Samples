@@ -59,6 +59,20 @@ void WebImageView::imageLoaded() {
 
 	// Get reply
 	QNetworkReply * reply = qobject_cast<QNetworkReply*>(sender());
+	
+	// Check status code
+	QVariant statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+	if(statusCode==301 || statusCode==302 || statusCode==303 || statusCode==307){
+		QByteArray header = reply->rawHeader("location");
+        QUrl newUrl = QUrl::fromEncoded(header);
+        if (!newUrl.isValid()){
+        	newUrl = QUrl(QLatin1String(header));
+        }
+        if (!newUrl.isValid()){
+        	newUrl = QUrl("");
+        }
+		setUrl(newUrl);
+	}
 
 	// Process reply
 	QByteArray imageData = reply->readAll();
