@@ -19,6 +19,7 @@ public:
 
 	public Q_SLOTS:
 	void setUrl(const QUrl& url);
+    void clearCache();
 
 	private Q_SLOTS:
 	void imageLoaded();
@@ -34,6 +35,9 @@ private:
 	static QNetworkDiskCache * mNetworkDiskCache;
 	QUrl mUrl;
 	float mLoading;
+
+	bool isARedirectedUrl(QNetworkReply *reply);
+	void setURLToRedirectedUrl(QNetworkReply *reply);
 };
 
 #endif /* WEBIMAGEVIEW_H_ */

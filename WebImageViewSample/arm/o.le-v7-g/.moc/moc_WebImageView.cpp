@@ -1,8 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'WebImageView.h'
 **
-** Created: Tue Jan 8 09:52:33 2013
-**      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
+** Created by: The Qt Meta Object Compiler version 63 (Qt 4.8.5)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -11,7 +10,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'WebImageView.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 63
-#error "This file was generated using the moc from 4.8.4. It"
+#error "This file was generated using the moc from 4.8.5. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -23,8 +22,8 @@ static const uint qt_meta_data_WebImageView[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
-       2,   39, // properties
+       6,   14, // methods
+       2,   44, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
@@ -36,12 +35,13 @@ static const uint qt_meta_data_WebImageView[] = {
 
  // slots: signature, parameters, type, tag, flags
       48,   44,   13,   13, 0x0a,
-      61,   13,   13,   13, 0x08,
-      77,   75,   13,   13, 0x08,
+      61,   13,   13,   13, 0x0a,
+      74,   13,   13,   13, 0x08,
+      90,   88,   13,   13, 0x08,
 
  // properties: name, type, flags
-      44,  110, 0x11495103,
-     121,  115, 0x87495001,
+      44,  123, 0x11495103,
+     134,  128, 0x87495001,
 
  // properties: notify_signal_id
        0,
@@ -52,9 +52,9 @@ static const uint qt_meta_data_WebImageView[] = {
 
 static const char qt_meta_stringdata_WebImageView[] = {
     "WebImageView\0\0urlChanged()\0loadingChanged()\0"
-    "url\0setUrl(QUrl)\0imageLoaded()\0,\0"
-    "dowloadProgressed(qint64,qint64)\0QUrl\0"
-    "float\0loading\0"
+    "url\0setUrl(QUrl)\0clearCache()\0"
+    "imageLoaded()\0,\0dowloadProgressed(qint64,qint64)\0"
+    "QUrl\0float\0loading\0"
 };
 
 void WebImageView::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -66,8 +66,9 @@ void WebImageView::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 0: _t->urlChanged(); break;
         case 1: _t->loadingChanged(); break;
         case 2: _t->setUrl((*reinterpret_cast< const QUrl(*)>(_a[1]))); break;
-        case 3: _t->imageLoaded(); break;
-        case 4: _t->dowloadProgressed((*reinterpret_cast< qint64(*)>(_a[1])),(*reinterpret_cast< qint64(*)>(_a[2]))); break;
+        case 3: _t->clearCache(); break;
+        case 4: _t->imageLoaded(); break;
+        case 5: _t->dowloadProgressed((*reinterpret_cast< qint64(*)>(_a[1])),(*reinterpret_cast< qint64(*)>(_a[2]))); break;
         default: ;
         }
     }
@@ -107,9 +108,9 @@ int WebImageView::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 6;
     }
 #ifndef QT_NO_PROPERTIES
       else if (_c == QMetaObject::ReadProperty) {

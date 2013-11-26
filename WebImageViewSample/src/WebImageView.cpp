@@ -10,99 +10,84 @@ QNetworkAccessManager * WebImageView::mNetManager = new QNetworkAccessManager();
 QNetworkDiskCache * WebImageView::mNetworkDiskCache = new QNetworkDiskCache();
 
 WebImageView::WebImageView() {
+    // Initialize network cache
+    mNetworkDiskCache->setCacheDirectory(QDesktopServices::storageLocation(QDesktopServices::CacheLocation));
 
-	// Initialize network cache
-	mNetworkDiskCache->setCacheDirectory(QDesktopServices::storageLocation(QDesktopServices::CacheLocation));
+    // Set cache in manager
+    mNetManager->setCache(mNetworkDiskCache);
 
-	// Set cache in manager
-	mNetManager->setCache(mNetworkDiskCache);
-
+    // Set defaults
+    mLoading = 0;
 }
 
 const QUrl& WebImageView::url() const {
-	return mUrl;
+    return mUrl;
 }
 
 void WebImageView::setUrl(const QUrl& url) {
+    // Variables
+    mUrl = url;
+    mLoading = 0;
 
-	// Variables
-	mUrl = url;
-	mLoading = 0;
+    // Reset the image
+    resetImage();
 
-	// Reset the image
-	resetImage();
+    // Create request
+    QNetworkRequest request;
+    request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
+    request.setUrl(url);
 
-	// Create request
-	QNetworkRequest request;
-	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
-	request.setUrl(url);
+    // Create reply
+    QNetworkReply * reply = mNetManager->get(request);
 
-	// Create reply
-	QNetworkReply * reply = mNetManager->get(request);
-	QObject::connect(reply,SIGNAL(finished()), this, SLOT(imageLoaded()));
-	QObject::connect(reply,SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(dowloadProgressed(qint64,qint64)));
+    // Connect to signals
+    QObject::connect(reply, SIGNAL(finished()), this, SLOT(imageLoaded()));
+    QObject::connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(dowloadProgressed(qint64,qint64)));
 
-	//
-	// Note:
-	// If you see Function "downloadProgress ( qint64 , qint64  ) is not defined"
-	// Simply close this file, delete the error and compile the project
-	//
-
-	emit urlChanged();
+    emit urlChanged();
 }
 
 double WebImageView::loading() const {
-	return mLoading;
+    return mLoading;
 }
 
 void WebImageView::imageLoaded() {
+    // Get reply
+    QNetworkReply * reply = qobject_cast<QNetworkReply*>(sender());
 
-	// Get reply
-	QNetworkReply * reply = qobject_cast<QNetworkReply*>(sender());
-	
-	// Check status code
-	QVariant statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-	if(statusCode==301 || statusCode==302 || statusCode==303 || statusCode==307){
-		QByteArray header = reply->rawHeader("location");
-        QUrl newUrl = QUrl::fromEncoded(header);
-        if (!newUrl.isValid()){
-        	newUrl = QUrl(QLatin1String(header));
+    if (reply->error() == QNetworkReply::NoError) {
+        if (isARedirectedUrl(reply)) {
+            setURLToRedirectedUrl(reply);
+            return;
+        } else {
+            QByteArray imageData = reply->readAll();
+            setImage(Image(imageData));
         }
-        if (!newUrl.isValid()){
-        	newUrl = QUrl("");
-        }
-		setUrl(newUrl);
-	}
+    }
 
-	if (reply->error() == QNetworkReply::NoError){
+    // Memory management
+    reply->deleteLater();
+}
 
-		QUrl baseUrl = reply->url();
-		QUrl redirection = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
-		// if redirection exists... Set the new Url
-		if(redirection.isEmpty()){
-			// Process reply
-			QByteArray imageData = reply->readAll();
+bool WebImageView::isARedirectedUrl(QNetworkReply *reply) {
+    QUrl redirection = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+    return !redirection.isEmpty();
+}
 
-			// Set image from data
-			setImage( Image(imageData) );
+void WebImageView::setURLToRedirectedUrl(QNetworkReply *reply) {
+    QUrl redirectionUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+    QUrl baseUrl = reply->url();
+    QUrl resolvedUrl = baseUrl.resolved(redirectionUrl);
 
-		}
-		else{
-			QUrl resolveUrl = baseUrl.resolved(redirection);
-			setUrl(resolveUrl.toString());
-			return;
-		}
+    setUrl(resolvedUrl.toString());
+}
 
-	}
+void WebImageView::clearCache() {
+    mNetworkDiskCache->clear();
+}
 
-		// Memory management
-		reply->deleteLater();
+void WebImageView::dowloadProgressed(qint64 bytes, qint64 total) {
+    mLoading = double(bytes) / double(total);
 
-	}
-
-	void WebImageView::dowloadProgressed(qint64 bytes,qint64 total) {
-
-		mLoading =  double(bytes)/double(total);
-		emit loadingChanged();
-
-	}
+    emit loadingChanged();
+}
