@@ -28,7 +28,7 @@ public:
 	signals:
 	void urlChanged();
 	void loadingChanged();
-
+    void loadingFinished();
 
 private:
 	static QNetworkAccessManager * mNetManager;

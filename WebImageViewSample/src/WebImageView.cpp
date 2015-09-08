@@ -62,6 +62,8 @@ void WebImageView::imageLoaded() {
         } else {
             QByteArray imageData = reply->readAll();
             setImage(Image(imageData));
+
+            emit loadingFinished();
         }
     }
 
